@@ -19,9 +19,19 @@ class PDOEvent extends PDOGsb
 	 *
 	 * @return le tableau associatif des actions 
 	*/
+	//renvoie tout les Events auxquel l'utilisateurs participe
 	public function getAllEvent($id)
 	{
-		$req = "select distinct even.id, lieu, description, dateDebut, dateFin, heureDebut, heureFin, libelle from even inner join participer on even.id = id_Event where participer.id != ".$id;
+		$req = "select distinct even.id, lieu, description, dateDebut, dateFin, heureDebut, heureFin, Libelle from even inner join participer on even.id = id_Event where participer.id = ".$id;
+		$res = $this->monPdo->query($req);
+		$lesLignes = $res->fetchAll();
+		return $lesLignes;
+	}
+
+	//renvoie tout les Events auxquel l'utilisateur n'a pas encore répondu
+	public function getForComingEvent($id)
+	{
+		$req = 'select distinct even.id, lieu, description, dateDebut, dateFin, heureDebut, heureFin, Libelle from even where even.id not in (select id_Event from participer where id = '.$id.')';
 		$res = $this->monPdo->query($req);
 		$lesLignes = $res->fetchAll();
 		return $lesLignes;
