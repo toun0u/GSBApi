@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+     KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <link href="lib/ratchet/dist/css/ratchet.css" rel="stylesheet">
+        <!--
+        Customize this policy to fit your own app's needs. For more guidance, see:
+            https://github.com/apache/cordova-plugin-whitelist/blob/master/README.md#content-security-policy
+        Some notes:
+            * gap: is required only on iOS (when using UIWebView) and is needed for JS->native communication
+            * https://ssl.gstatic.com is required only on Android and is needed for TalkBack to function properly
+            * Disables use of inline scripts in order to mitigate risk of XSS vulnerabilities. To change this:
+                * Enable inline JS: add 'unsafe-inline' to default-src
+        -->
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *">
+        <meta name="format-detection" content="telephone=no">
+        <meta name="msapplication-tap-highlight" content="no">
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+        <link rel="stylesheet" type="text/css" href="css/index.css">
+
+        
+        <title>Boursiquote Mobile</title>
+        </head>
+        <body>
+
+        <script id="login-tpl" type="text/template">
+            <header class="bar bar-nav">
+                <h1 class="title">Boursiquote Mobile App</h1>
+            </header>
+            <div class="content">
+
+                <div class='header'><h1>Connexion</h1></div>
+
+                <div class='login-view'>
+                    <input class='login' type="text" placeholder="Votre nom :" />
+                    <input class='motdepasse' type="password" placeholder="Votre mot de passe :" />
+                    <p><button class="bt_connex" type="button">Connexion</button></p>
+                    <input class="memoid" type="checkbox" /> Mémoriser
+                    <div class="erreur_msg"></div>
+                </div>  
+            </div>
+        </script>
+
+        <script id="profile-tpl" type="text/template">
+            <header class="bar bar-nav">
+                <h1 class="title">Boursiquote Mobile App</h1>
+            </header>
+            <div class="content">
+
+                <div class='header'><h1>Votre compte</h1></div>
+                <br/>
+                <p>edondelinger@gmail.com</p>
+
+                <button class="btn btn-negative btn-block btn-outlined deco">
+                  Me déconnecter de cet appareil
+                </button>
+                <br/>
+                <button class="btn btn-primary btn-block btn-outlined retour">
+                  Retour
+                </button>
+                
+            </div>
+            <nav id="footer" class="bar bar-tab">
+                <ul class="tab-inner">
+                    <li class="tab-item options-link">
+                        <span class="icon icon-home"></span>
+                        <span class="tab-label">Home</span>
+                    </li>
+                    <li class="tab-item options-link">
+                        <span class="icon icon-search"></span>
+                        <span class="tab-label">Alertes</span>
+                    </li>
+                    <li class="tab-item options-link">
+                        <span class="icon icon-person"></span>
+                        <span class="tab-label">Profil</span>
+                    </li>
+                    <li class="tab-item options-link">
+                        <span class="icon icon-close"></span>
+                        <span class="tab-label">Quitter</span>
+                    </li>
+                </ul>
+            </nav>
+        </script>
+
+        <script id="home-tpl" type="text/template">
+
+            <!-- Block button in standard bar fixed below top bar -->
+            <header class="bar bar-nav">
+                <h1 class="title">Vos portefeuilles</h1>
+            </header>
+
+            <div class="content">
+                
+                <ul class="table-view">
+                  {{#each listePortefs}}
+                  <li id="{{id}}" class="table-view-cell unPortef">
+                    <a class="navigate-right">
+                      {{libelle}} {{montant}} Euros
+                      <span class="badge">{{actions}}</span>
+                      <p>Perf. {{variation_initiale}} %</p>
+                      Variation veille {{variation_veille}} %
+                      Liquidités : {{liquidites}} Euros
+                    </a>
+                  </li>
+                  {{/each}}
+                </ul>  
+            </div>
+
+            <nav id="footer" class="bar bar-tab">
+                <ul class="tab-inner">
+                    <li class="tab-item options-link">
+                        <span class="icon icon-home"></span>
+                        <span class="tab-label">Home</span>
+                    </li>
+                    <li class="tab-item options-link">
+                        <span class="icon icon-search"></span>
+                        <span class="tab-label">Alertes</span>
+                    </li>
+                    <li class="tab-item options-link">
+                        <span class="icon icon-person"></span>
+                        <span class="tab-label">Profil</span>
+                    </li>
+                    <li class="tab-item options-link">
+                        <span class="icon icon-close"></span>
+                        <span class="tab-label">Quitter</span>
+                    </li>
+                </ul>
+            </nav>
+        </script>
+
+        <script id="detail-port-tpl" type="text/template">
+
+            <!-- Block button in standard bar fixed below top bar -->
+            <header class="bar bar-nav">
+                <h1 class="title">Contenu du portefeuille {{nomPortefeuille}}</h1>
+            </header>
+
+            <div class="content">     
+                <ul class="table-view">
+                  {{#each listeActions}}
+                  <li id="{{id}}" class="table-view-cell unPortef">
+                    <a class="navigate-right">
+                      {{ticker}} {{libelle}} - PRU : {{PRU}}
+                      <span class="badge">{{variation_veille}} %</span>
+                      <p>Perf. {{variation_initiale}} %</p>
+                      <p>Nombre : {{nombre}} cours : {{cours}} Montant {{montant}} </p>
+                    </a>
+                  </li>
+                  {{/each}}
+                </ul>  
+            </div>
+
+            <nav id="footer" class="bar bar-tab">
+                <ul class="tab-inner">
+                    <li class="tab-item options-link">
+                        <span class="icon icon-home"></span>
+                        <span class="tab-label">Home</span>
+                    </li>
+                    <li class="tab-item options-link">
+                        <span class="icon icon-search"></span>
+                        <span class="tab-label">Alertes</span>
+                    </li>
+                    <li class="tab-item options-link">
+                        <span class="icon icon-person"></span>
+                        <span class="tab-label">Profil</span>
+                    </li>
+                    <li class="tab-item options-link">
+                        <span class="icon icon-close"></span>
+                        <span class="tab-label">Quitter</span>
+                    </li>
+                </ul>
+            </nav>
+        </script>
+
+        <script id="alertes-tpl" type="text/template">
+
+            <!-- Block button in standard bar fixed below top bar -->
+            <header class="bar bar-nav">
+                <h1 class="title">Vos alertes récentes</h1>
+            </header>
+
+            <div class="content">     
+                <ul class="table-view">
+                  {{#each listeAlertes}}
+                  <li class="table-view-cell">
+                        <span>{{libelle}} ({{ticker}}) - {{cours}}</span>
+                        <p>Seuil {{alerte}} atteint </p> à {{date}}
+                  </li>
+                  {{/each}}
+                </ul>  
+            </div>
+
+            <nav id="footer" class="bar bar-tab">
+                <ul class="tab-inner">
+                    <li class="tab-item options-link">
+                        <span class="icon icon-home"></span>
+                        <span class="tab-label">Home</span>
+                    </li>
+                    <li class="tab-item options-link">
+                        <span class="icon icon-search"></span>
+                        <span class="tab-label">Alertes</span>
+                    </li>
+                    <li class="tab-item options-link">
+                        <span class="icon icon-person"></span>
+                        <span class="tab-label">Profil</span>
+                    </li>
+                    <li class="tab-item options-link">
+                        <span class="icon icon-close"></span>
+                        <span class="tab-label">Quitter</span>
+                    </li>
+                </ul>
+            </nav>
+        </script>
+
+        <script src="scripts/jquery-1.11.3.js"></script>
+        <script src="scripts/handlebars.js"></script>
+        <script src="classes/classes_file.js"></script>
+        <script src="classes/services.js"></script>
+        <script src="scripts/ServiceDemandeDevis.js"></script>
+        <script src="views/app_views.js"></script>
+        <script type="text/javascript" src="cordova.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+    </body>
+</html>
