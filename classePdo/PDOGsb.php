@@ -24,10 +24,12 @@ abstract class PDOGsb
       	private static $mdp='gsb' ;	
 		protected $monPdo;
 */
-		private static $serveur='mysql:host=172.18.204.2';
+		//private static $serveur='mysql:host=172.18.204.2';
+      	private static $serveur = 'mysql:host=127.0.0.1';
       	private static $bdd='dbname=gsb';   		
       	private static $user='root' ;    		
-      	private static $mdp='gsb' ;	
+      	//private static $mdp='gsb' ;	
+		private static $mdp = '';
 		protected $monPdo;
 /**
  * Constructeur privé, crée l'instance de PDO qui sera sollicitée
